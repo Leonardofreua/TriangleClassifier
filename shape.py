@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import sys
 
-
+#https://www.varsitytutors.com/hotmath/hotmath_help/topics/translations
 class Point:
     def __init__(self):
         self.x = 0
