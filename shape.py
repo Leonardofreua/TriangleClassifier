@@ -4,8 +4,6 @@ import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
 
 
-# https://www.varsitytutors.com/hotmath/hotmath_help/topics/translations
-# https://pillow.readthedocs.io/en/stable/reference/ImageDraw.html
 class Point:
     def __init__(self):
         self.x = 0
@@ -39,7 +37,7 @@ class Triangle(object):
         b = self._euclidDistSquare(p1, p3)
         c = self._euclidDistSquare(p2, p3)
 
-        print(f"O Triângulo é {self._getAngleClassification(a, b, c)} e {self._getSideClassification(a, b, c)}\n")
+        print(f"The triangle is {self._getAngleClassification(a, b, c)} and {self._getSideClassification(a, b, c)}\n")
 
     def showTriangle(self):
         points = ((self.a.pointX, self.a.pointY),
@@ -47,8 +45,13 @@ class Triangle(object):
                   (self.c.pointX, self.c.pointY))
         self.designerConfig(points)
 
-    def designerConfig(self, *args):
-        image = Image.new("RGB", (400, 400))
+    def setPoints(self, shape):
+        return ((shape.a.pointX, shape.b.pointY),
+                (shape.b.pointX, shape.b.pointY),
+                (shape.c.pointX, shape.c.pointY))
+
+    def designerConfig(self, dimension=(400, 400), *args):
+        image = Image.new("RGB", dimension)
 
         draw = ImageDraw.Draw(image)
 
@@ -65,67 +68,78 @@ class Triangle(object):
 
     def _getSideClassification(self, a, b, c):
         if a == b and b == c:
-            return "Equilátero"
+            return "Equilateral"
         elif a == b or b == c:
-            return "Isósceles"
+            return "Isosceles"
         else:
-            return "Escaleno"
+            return "Scalene"
 
     def _getAngleClassification(self, a, b, c):
         if a + b > c:
-            return "Acutângulo"
+            return "Acute"
         elif a + b == c:
-            return "Retângulo"
+            return "Rectangle"
         else:
-            return "Obtuso"
+            return "Obtuse"
 
     def classify(self):
         try:
-            print("\nInforme os vetores do lado DIREITO (A) do Triângulo:\n")
-            self.a.pointX = int(input("Vetor A1: "))
-            self.a.pointY = int(input("Vetor A2: "))
+            print("\nCoordinates of vector A:\n")
+            self.a.pointX = int(input("X: "))
+            self.a.pointY = int(input("Y: "))
 
-            print("\nInforme os vetores da BASE (B) do Triângulo:\n")
-            self.b.pointX = int(input("Vetor B1: "))
-            self.b.pointY = int(input("Vetor B2: "))
+            print("\nCoordinates of vector B:\n")
+            self.b.pointX = int(input("X: "))
+            self.b.pointY = int(input("Y: "))
 
-            print("\nInforme os vetores do lado ESQUERDO (C) do Triângulo:\n")
-            self.c.pointX = int(input("Vetor C1: "))
-            self.c.pointY = int(input("Vetor C2: "))
+            print("\nCoordinates of vector C:\n")
+            self.c.pointX = int(input("X: "))
+            self.c.pointY = int(input("Y: "))
 
             self._classifyTriangle(self.a, self.b, self.c)
         except ValueError:
-            print('Insira apenas números!')
+            print('Insert numbers only!')
 
     def translation(self, triangle):
-        print("Valores para Movimentar o Triângulo")
-        t_x = int(input("Valor 1: "))
-        t_y = int(input("Valor 2: "))
+        print("Values to Translate the Triangle")
+        t_x = int(input("Value 1: "))
+        t_y = int(input("Value 2: "))
 
-        triangleT = triangle
+        T_triangle = triangle
 
-        after_point = ((triangle.a.pointX, triangle.b.pointY),
-                       (triangle.b.pointX, triangle.b.pointY),
-                       (triangle.c.pointX, triangle.c.pointY))
-        points = ((triangleT.a.pointX + t_x, triangleT.b.pointY - t_y),
-                  (triangleT.b.pointX + t_x, triangleT.b.pointY - t_y),
-                  (triangleT.c.pointX + t_x, triangleT.c.pointY - t_y))
+        after_point = self.setPoints(triangle)
+        points = ((T_triangle.a.pointX + t_x, T_triangle.b.pointY - t_y),
+                  (T_triangle.b.pointX + t_x, T_triangle.b.pointY - t_y),
+                  (T_triangle.c.pointX + t_x, T_triangle.c.pointY - t_y))
 
         self.designerConfig(points, after_point)
+
+    def scaling(self, triangle):
+        s_x = int(input("Value 1: "))
+        s_y = int(input("Value 2: "))
+
+        S_triangle = triangle
+
+        after_point = self.setPoints(triangle)
+        points = ((s_x * S_triangle.a.pointX, s_y * S_triangle.b.pointY),
+                  (s_x * S_triangle.b.pointX, s_y * S_triangle.b.pointY),
+                  (s_x * S_triangle.c.pointX, s_y * S_triangle.c.pointY))
+
+        self.designerConfig((800, 800), points, after_point)
 
 
 def main():
     triangle = Triangle()
     option = 0
     while option != 6:
-        print('''           [ 1 ] Classificar Triângulo
-           [ 2 ] Exibir
-           [ 3 ] Translação
-           [ 4 ] Escala
-           [ 5 ] Rotação
-           [ 6 ] Sair''')
+        print('''           [ 1 ] Classiy Triangle
+           [ 2 ] Show original Triangle
+           [ 3 ] Translation
+           [ 4 ] Scaling
+           [ 5 ] Rotation
+           [ 6 ] Exit''')
 
-        option = int(input('>>> Opção: '))
+        option = int(input('>>> Option: '))
 
         if option == 1:
             triangle.classify()
@@ -133,10 +147,12 @@ def main():
             triangle.showTriangle()
         elif option == 3:
             triangle.translation(triangle)
+        elif option == 4:
+            triangle.scaling(triangle)
         elif option == 6:
             sys.exit()
         else:
-            print('Opção inválida!')
+            print('Invalid option!')
 
 
 if __name__ == '__main__':
