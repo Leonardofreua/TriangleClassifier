@@ -107,12 +107,12 @@ class Triangle(object):
 
         T_triangle = triangle
 
-        after_point = self.setPoints(triangle)
+        previous_points = self.setPoints(triangle)
         points = ((T_triangle.a.pointX + t_x, T_triangle.b.pointY - t_y),
                   (T_triangle.b.pointX + t_x, T_triangle.b.pointY - t_y),
                   (T_triangle.c.pointX + t_x, T_triangle.c.pointY - t_y))
 
-        self.designerConfig(points, after_point)
+        self.designerConfig(points, previous_points)
 
     def scaling(self, triangle):
         s_x = int(input("Value 1: "))
@@ -120,12 +120,12 @@ class Triangle(object):
 
         S_triangle = triangle
 
-        after_point = self.setPoints(triangle)
+        previous_points = self.setPoints(triangle)
         points = ((s_x * S_triangle.a.pointX, s_y * S_triangle.b.pointY),
                   (s_x * S_triangle.b.pointX, s_y * S_triangle.b.pointY),
                   (s_x * S_triangle.c.pointX, s_y * S_triangle.c.pointY))
 
-        self.designerConfig((800, 800), points, after_point)
+        self.designerConfig((800, 800), points, previous_points)
 
 
 def main():
