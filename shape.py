@@ -1,9 +1,11 @@
 import math
-import numpy as np
-import cv2
 import sys
+import PIL.ImageDraw as ImageDraw
+import PIL.Image as Image
 
-#https://www.varsitytutors.com/hotmath/hotmath_help/topics/translations
+
+# https://www.varsitytutors.com/hotmath/hotmath_help/topics/translations
+# https://pillow.readthedocs.io/en/stable/reference/ImageDraw.html
 class Point:
     def __init__(self):
         self.x = 0
@@ -27,10 +29,10 @@ class Point:
 
 
 class Triangle(object):
-    def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
+    def __init__(self):
+        self.a = Point()
+        self.b = Point()
+        self.c = Point()
 
     def _classifyTriangle(self, p1, p2, p3):
         a = self._euclidDistSquare(p1, p2)
@@ -40,21 +42,26 @@ class Triangle(object):
         print(f"O Triângulo é {self._getAngleClassification(a, b, c)} e {self._getSideClassification(a, b, c)}\n")
 
     def showTriangle(self):
-        image = np.ones((300, 300, 3), np.uint8) * 255
+        points = ((self.a.pointX, self.a.pointY),
+                  (self.b.pointX, self.b.pointY),
+                  (self.c.pointX, self.c.pointY))
+        self.designerConfig(points)
 
-        a = (self.c.x, self.c.y)  # L and top
-        b = (self.a.x, self.a.y)  # L and left base
-        c = (self.b.x, self.b.y)  # R and right base
+    def designerConfig(self, *args):
+        image = Image.new("RGB", (400, 400))
 
-        triangle_cnt = np.array([a, b, c])
+        draw = ImageDraw.Draw(image)
 
-        cv2.drawContours(image, [triangle_cnt], 0, (0, 255, 0), -1)
+        for value in args:
+            if args[0] == value:
+                draw.polygon(value, fill=200)
+            else:
+                draw.polygon(value, outline='green')
 
-        cv2.imshow("image", image)
-        cv2.waitKey()
+        image.show()
 
     def _euclidDistSquare(self, p1, p2):
-        return int(math.pow(p1.x - p2.x, 2)) + int(math.pow(p1.y - p2.y, 2))
+        return int(math.pow(p1.pointX - p2.pointX, 2)) + int(math.pow(p1.pointY - p2.pointY, 2))
 
     def _getSideClassification(self, a, b, c):
         if a == b and b == c:
@@ -75,34 +82,40 @@ class Triangle(object):
     def classify(self):
         try:
             print("\nInforme os vetores do lado DIREITO (A) do Triângulo:\n")
-            self.a.x = int(input("Vetor A1: "))
-            self.a.y = int(input("Vetor A2: "))
+            self.a.pointX = int(input("Vetor A1: "))
+            self.a.pointY = int(input("Vetor A2: "))
 
             print("\nInforme os vetores da BASE (B) do Triângulo:\n")
-            self.b.x = int(input("Vetor B1: "))
-            self.b.y = int(input("Vetor B2: "))
+            self.b.pointX = int(input("Vetor B1: "))
+            self.b.pointY = int(input("Vetor B2: "))
 
             print("\nInforme os vetores do lado ESQUERDO (C) do Triângulo:\n")
-            self.c.x = int(input("Vetor C1: "))
-            self.c.y = int(input("Vetor C2: "))
+            self.c.pointX = int(input("Vetor C1: "))
+            self.c.pointY = int(input("Vetor C2: "))
 
             self._classifyTriangle(self.a, self.b, self.c)
         except ValueError:
             print('Insira apenas números!')
 
-    def translation(self):
+    def translation(self, triangle):
         print("Valores para Movimentar o Triângulo")
         t_x = int(input("Valor 1: "))
         t_y = int(input("Valor 2: "))
 
-        triangleTranslated = Triangle(self.a, self.b, self.c)
+        triangleT = triangle
+
+        after_point = ((triangle.a.pointX, triangle.b.pointY),
+                       (triangle.b.pointX, triangle.b.pointY),
+                       (triangle.c.pointX, triangle.c.pointY))
+        points = ((triangleT.a.pointX + t_x, triangleT.b.pointY - t_y),
+                  (triangleT.b.pointX + t_x, triangleT.b.pointY - t_y),
+                  (triangleT.c.pointX + t_x, triangleT.c.pointY - t_y))
+
+        self.designerConfig(points, after_point)
 
 
 def main():
-    p1 = Point()
-    p2 = Point()
-    p3 = Point()
-    triangle = Triangle(p1, p2, p3)
+    triangle = Triangle()
     option = 0
     while option != 6:
         print('''           [ 1 ] Classificar Triângulo
@@ -119,7 +132,7 @@ def main():
         elif option == 2:
             triangle.showTriangle()
         elif option == 3:
-            triangle.translation()
+            triangle.translation(triangle)
         elif option == 6:
             sys.exit()
         else:
@@ -128,7 +141,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 
 # Vetor A1: 100
 # Vetor A2: 150
