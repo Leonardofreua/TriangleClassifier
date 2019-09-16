@@ -39,19 +39,13 @@ class Triangle(object):
 
         print(f"The triangle is {self._getAngleClassification(a, b, c)} and {self._getSideClassification(a, b, c)}\n")
 
-    def showTriangle(self):
-        points = ((self.a.pointX, self.a.pointY),
-                  (self.b.pointX, self.b.pointY),
-                  (self.c.pointX, self.c.pointY))
-        self.designerConfig(points)
-
-    def setPoints(self, shape):
+    def _setPoints(self, shape):
         return ((shape.a.pointX, shape.b.pointY),
                 (shape.b.pointX, shape.b.pointY),
                 (shape.c.pointX, shape.c.pointY))
 
-    def designerConfig(self, dimension=(400, 400), *args):
-        image = Image.new("RGB", dimension)
+    def _designerConfig(self, dimension=(50, 50), *args):
+        image = Image.new("RGB", dimension if dimension is not None else (400, 400))
 
         draw = ImageDraw.Draw(image)
 
@@ -82,6 +76,12 @@ class Triangle(object):
         else:
             return "Obtuse"
 
+    def showTriangle(self):
+        points = ((self.a.pointX, self.a.pointY),
+                  (self.b.pointX, self.b.pointY),
+                  (self.c.pointX, self.c.pointY))
+        self._designerConfig(None, points)
+
     def classify(self):
         try:
             print("\nCoordinates of vector A:\n")
@@ -100,32 +100,45 @@ class Triangle(object):
         except ValueError:
             print('Insert numbers only!')
 
-    def translation(self, triangle):
+    def translation(self, polygon):
         print("Values to Translate the Triangle")
         t_x = int(input("Value 1: "))
         t_y = int(input("Value 2: "))
 
-        T_triangle = triangle
+        T_triangle = polygon
 
-        previous_points = self.setPoints(triangle)
+        previous_points = self._setPoints(polygon)
         points = ((T_triangle.a.pointX + t_x, T_triangle.b.pointY - t_y),
                   (T_triangle.b.pointX + t_x, T_triangle.b.pointY - t_y),
                   (T_triangle.c.pointX + t_x, T_triangle.c.pointY - t_y))
 
-        self.designerConfig(points, previous_points)
+        self._designerConfig(None, points, previous_points)
 
-    def scaling(self, triangle):
+    def scaling(self, polygon):
         s_x = int(input("Value 1: "))
         s_y = int(input("Value 2: "))
 
-        S_triangle = triangle
+        S_triangle = polygon
 
-        previous_points = self.setPoints(triangle)
+        previous_points = self._setPoints(polygon)
         points = ((s_x * S_triangle.a.pointX, s_y * S_triangle.b.pointY),
                   (s_x * S_triangle.b.pointX, s_y * S_triangle.b.pointY),
                   (s_x * S_triangle.c.pointX, s_y * S_triangle.c.pointY))
 
-        self.designerConfig((800, 800), points, previous_points)
+        self._designerConfig((800, 800), points, previous_points)
+
+    def rotation(self, polygon):
+        theta = int(input("Enter the angle: "))
+        theta = math.radians(theta)
+        rotated_polygon = []
+
+        points = self._setPoints(polygon)
+
+        for corner in points:
+            rotated_polygon.append((corner[0] * math.cos(theta) - corner[1] * math.sin(theta),
+                                    corner[0] * math.sin(theta) + corner[1] * math.cos(theta)))
+
+        self._designerConfig((800, 800), rotated_polygon)
 
 
 def main():
@@ -149,6 +162,8 @@ def main():
             triangle.translation(triangle)
         elif option == 4:
             triangle.scaling(triangle)
+        elif option == 5:
+            triangle.rotation(triangle)
         elif option == 6:
             sys.exit()
         else:
