@@ -30,6 +30,10 @@ class Triangle(object):
         self.a = Point()
         self.b = Point()
         self.c = Point()
+        self.img_names = {'original': 'original_triangle.jpg',
+                          'translated': 'translated_triangle.jpg',
+                          'scaled': 'scaled_triangle.jpg',
+                          'rotated': 'rotated_triangle.jpg'}
 
     def _classifyTriangle(self, p1, p2, p3):
         a = self._euclidDistSquare(p1, p2)
@@ -39,18 +43,24 @@ class Triangle(object):
         print(f"The triangle is {self._getAngleClassification(a, b, c)} and {self._getSideClassification(a, b, c)}\n")
 
     def _setPoints(self, shape):
-        return ((shape.a.pointX, shape.b.pointY),
+        return ((shape.a.pointX, shape.a.pointY),
                 (shape.b.pointX, shape.b.pointY),
                 (shape.c.pointX, shape.c.pointY))
 
-    def _designerConfig(self, points):
-        points.append(points[0])  # repeat the first point to create a 'closed loop'
+    def _designerConfig(self, points, file_name):
+        points.append(points[0])
 
-        xs, ys = zip(*points)  # create lists of x and y values
+        xs, ys = zip(*points)
 
         plt.figure()
-        plt.plot(xs, ys)
-        plt.show()  # if you need...
+        plt.grid()
+        plt.autoscale()
+        plt.title(file_name.replace('.jpg', ''))
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.plot(xs, ys, '-o')
+        plt.savefig(file_name)
+        plt.show()
 
     def _euclidDistSquare(self, p1, p2):
         return int(math.pow(p1.pointX - p2.pointX, 2)) + int(math.pow(p1.pointY - p2.pointY, 2))
@@ -76,7 +86,7 @@ class Triangle(object):
                   [self.b.pointX, self.b.pointY],
                   [self.c.pointX, self.c.pointY]]
 
-        self._designerConfig(points)
+        self._designerConfig(points, self.img_names['original'])
 
     def classify(self):
         try:
@@ -101,41 +111,41 @@ class Triangle(object):
         t_x = int(input("Value 1: "))
         t_y = int(input("Value 2: "))
 
+        translated_polygon = []
         T_triangle = polygon
+        points = self._setPoints(T_triangle)
 
-        # previous_points = self._setPoints(polygon)
-        points = [[T_triangle.a.pointX + t_x, T_triangle.a.pointY - t_y],
-                  [T_triangle.b.pointX + t_x, T_triangle.b.pointY - t_y],
-                  [T_triangle.c.pointX + t_x, T_triangle.c.pointY - t_y]]
+        for corner in points:
+            translated_polygon.append((corner[0] - t_x, corner[1] - t_y))
 
-        self._designerConfig(points)
+        self._designerConfig(translated_polygon, self.img_names['translated'])
 
     def scaling(self, polygon):
         s_x = int(input("Value 1: "))
         s_y = int(input("Value 2: "))
 
+        scaled_polygon = []
         S_triangle = polygon
+        points = self._setPoints(S_triangle)
 
-        previous_points = self._setPoints(polygon)
-        points = ((s_x * S_triangle.a.pointX, s_y * S_triangle.a.pointY),
-                  (s_x * S_triangle.b.pointX, s_y * S_triangle.b.pointY),
-                  (s_x * S_triangle.c.pointX, s_y * S_triangle.c.pointY))
+        for corner in points:
+            scaled_polygon.append((s_x * corner[0], s_y * corner[1]))
 
-        self._designerConfig((800, 800), points, previous_points)
+        self._designerConfig(scaled_polygon, self.img_names['scaled'])
 
     def rotation(self, polygon):
         theta = int(input("Enter the angle: "))
-        thetaR = math.radians(theta)
+        theta = math.radians(theta)
         rotated_polygon = []
 
         points = self._setPoints(polygon)
 
         for corner in points:
-            rotated_polygon.append((int(round(corner[0] * math.cos(thetaR) - corner[1] * math.sin(thetaR), 0)),
-                                    int(round(corner[0] * math.sin(thetaR) + corner[1] * math.cos(thetaR), 0))
+            rotated_polygon.append((int(round(corner[0] * math.cos(theta) - corner[1] * math.sin(theta), 0)),
+                                    int(round(corner[0] * math.sin(theta) + corner[1] * math.cos(theta), 0))
                                     ))
 
-        self._designerConfig((4000, 4000), rotated_polygon)
+        self._designerConfig(rotated_polygon, self.img_names['rotated'])
 
 
 def main():
@@ -170,14 +180,14 @@ def main():
 if __name__ == '__main__':
     main()
 
-# Vetor A1: 100
-# Vetor A2: 150
+# Vectpr A1: 100
+# Vector A2: 150
 #
-# Vetor B1: 200
-# Vetor B2: 150
+# Vector B1: 200
+# Vector B2: 150
 #
-# Vetor C1: 200
-# Vetor C2: 100
+# Vector C1: 200
+# Vector C2: 100
 
 #
 # X: 20
