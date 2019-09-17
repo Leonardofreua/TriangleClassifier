@@ -1,7 +1,6 @@
 import math
 import sys
-import PIL.ImageDraw as ImageDraw
-import PIL.Image as Image
+import matplotlib.pyplot as plt
 
 
 class Point:
@@ -44,18 +43,14 @@ class Triangle(object):
                 (shape.b.pointX, shape.b.pointY),
                 (shape.c.pointX, shape.c.pointY))
 
-    def _designerConfig(self, dimension=(50, 50), *args):
-        image = Image.new("RGB", dimension if dimension is not None else (400, 400))
+    def _designerConfig(self, points):
+        points.append(points[0])  # repeat the first point to create a 'closed loop'
 
-        draw = ImageDraw.Draw(image)
+        xs, ys = zip(*points)  # create lists of x and y values
 
-        for value in args:
-            if args[0] == value:
-                draw.polygon(value, fill=200)
-            else:
-                draw.polygon(value, outline='green')
-
-        image.show()
+        plt.figure()
+        plt.plot(xs, ys)
+        plt.show()  # if you need...
 
     def _euclidDistSquare(self, p1, p2):
         return int(math.pow(p1.pointX - p2.pointX, 2)) + int(math.pow(p1.pointY - p2.pointY, 2))
@@ -77,10 +72,11 @@ class Triangle(object):
             return "Obtuse"
 
     def showTriangle(self):
-        points = ((self.a.pointX, self.a.pointY),
-                  (self.b.pointX, self.b.pointY),
-                  (self.c.pointX, self.c.pointY))
-        self._designerConfig(None, points)
+        points = [[self.a.pointX, self.a.pointY],
+                  [self.b.pointX, self.b.pointY],
+                  [self.c.pointX, self.c.pointY]]
+
+        self._designerConfig(points)
 
     def classify(self):
         try:
@@ -107,12 +103,12 @@ class Triangle(object):
 
         T_triangle = polygon
 
-        previous_points = self._setPoints(polygon)
-        points = ((T_triangle.a.pointX + t_x, T_triangle.b.pointY - t_y),
-                  (T_triangle.b.pointX + t_x, T_triangle.b.pointY - t_y),
-                  (T_triangle.c.pointX + t_x, T_triangle.c.pointY - t_y))
+        # previous_points = self._setPoints(polygon)
+        points = [[T_triangle.a.pointX + t_x, T_triangle.a.pointY - t_y],
+                  [T_triangle.b.pointX + t_x, T_triangle.b.pointY - t_y],
+                  [T_triangle.c.pointX + t_x, T_triangle.c.pointY - t_y]]
 
-        self._designerConfig(None, points, previous_points)
+        self._designerConfig(points)
 
     def scaling(self, polygon):
         s_x = int(input("Value 1: "))
@@ -121,7 +117,7 @@ class Triangle(object):
         S_triangle = polygon
 
         previous_points = self._setPoints(polygon)
-        points = ((s_x * S_triangle.a.pointX, s_y * S_triangle.b.pointY),
+        points = ((s_x * S_triangle.a.pointX, s_y * S_triangle.a.pointY),
                   (s_x * S_triangle.b.pointX, s_y * S_triangle.b.pointY),
                   (s_x * S_triangle.c.pointX, s_y * S_triangle.c.pointY))
 
@@ -129,16 +125,17 @@ class Triangle(object):
 
     def rotation(self, polygon):
         theta = int(input("Enter the angle: "))
-        theta = math.radians(theta)
+        thetaR = math.radians(theta)
         rotated_polygon = []
 
         points = self._setPoints(polygon)
 
         for corner in points:
-            rotated_polygon.append((corner[0] * math.cos(theta) - corner[1] * math.sin(theta),
-                                    corner[0] * math.sin(theta) + corner[1] * math.cos(theta)))
+            rotated_polygon.append((int(round(corner[0] * math.cos(thetaR) - corner[1] * math.sin(thetaR), 0)),
+                                    int(round(corner[0] * math.sin(thetaR) + corner[1] * math.cos(thetaR), 0))
+                                    ))
 
-        self._designerConfig((800, 800), rotated_polygon)
+        self._designerConfig((4000, 4000), rotated_polygon)
 
 
 def main():
@@ -181,3 +178,13 @@ if __name__ == '__main__':
 #
 # Vetor C1: 200
 # Vetor C2: 100
+
+#
+# X: 20
+# Y: 10
+#
+# X: 30
+# Y: 20
+#
+# X: 10
+# Y: 20
